@@ -21,7 +21,7 @@ from data_preprocess import data_preprocess_IEEE_big
 from data_preprocess import data_preprocess_bidmc
 from data_preprocess import data_preprocess_capno
 from data_preprocess import data_preprocess_clemson
-from lossess import _IPR_SSL, _SNR_SSL, _EMD_SSL, resample_v2_loss, shiftfreq_loss
+from losses import _IPR_SSL, _SNR_SSL, _EMD_SSL, resample_v2_loss, shiftfreq_loss
 
 def setup_data_loader(args):
     if args.dataset == 'dalia':
