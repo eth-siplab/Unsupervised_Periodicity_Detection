@@ -47,42 +47,6 @@ def set_seed(seed):
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
-def wandb_init(args, reinit_bool=True):
-    run=wandb.init(group="experiment_ptb",
-               job_type=str(args.target_domain),
-               reinit=reinit_bool,
-    # set the wandb project where this run will be logged
-    project="CycloDetection",
-    
-    # track hyperparameters and run metadata
-    config={
-    "learning_rate": 0.0003,
-    "architecture": "UNet",
-    "dataset": "Dalia",
-    "epochs": 9999,
-    })
-    return run
-
-def wandb_init_ptb(args):
-    if args.augs: name = args.dataset + '_' + 'aug' + '_' + args.aug_type + '_' + str(args.augs_ratio)
-    else: name = args.dataset + '_' + 'no_aug'
-    if args.past_work1: name = name + '_' + 'past_work1'
-    sweep_configuration = {
-        "name": name,
-        "method": "grid",
-        "metric": {"name": "avg_eval_mse", "goal": "minimize"},
-        "parameters": {'batch_size': {"values": [512]},
-                       'lr' : {"values": [1e-3]},
-                    #    'aug_type': {"values": ['resample_2']},
-                    #    'aug_ratio': {"values": [0.3]},
-                        'weight_decay': {"values": [1e-7]},
-                        'model': {"values": ['unet']},
-                       'seed': {"values": [10, 20 ,40]},
-                       'optimizer': {"values": ['adam']},
-                       },
-    }
-    return wandb.sweep(sweep_configuration, project="CycloDetection")
-
 def set_domain(args):
     if args.dataset == 'dalia':
         if args.data_type == 'ecg':
@@ -137,15 +101,6 @@ def set_domain(args):
 ############### Rep done ################
 
 def train_func(args):
-    if args.wandb: 
-        wandb.init()
-        args.batch_size, args.lr  = wandb.config.batch_size, wandb.config.lr
-        args.weight_decay = wandb.config.weight_decay
-        args.seed = wandb.config.seed
-        if args.augs:
-            args.aug_type = wandb.config.aug_type
-            args.aug_ratio = wandb.config.aug_ratio
-        set_seed(wandb.config.seed)
     domain, domain_error = set_domain(args), []
     assign_fft_params(args)
     for k in domain:
@@ -168,15 +123,11 @@ if __name__ == '__main__':
     DEVICE = torch.device('cuda:' + str(args.cuda) if torch.cuda.is_available() else 'cpu')
     print('device:', DEVICE)
     whole_error = []
-    if args.wandb: 
-        sweep_id = wandb_init_ptb(args)
-        wandb.agent(sweep_id, function=functools.partial(train_func, args))
-    else:
-        for i in range(3):
-            set_seed(np.random.randint(i*10,(i+1)*10))
-            error = train_func(args)
-            whole_error.append([np.mean(error[:,0]), np.mean(error[:,1]), np.mean(error[:,2])])
-            print(f'MAE: {np.mean(error[:,0])}, RMSE: {np.mean(error[:,1])}, r2: {np.mean(error[:,2])}')
+    for i in range(3):
+        set_seed(np.random.randint(i*10,(i+1)*10))
+        error = train_func(args)
+        whole_error.append([np.mean(error[:,0]), np.mean(error[:,1]), np.mean(error[:,2])])
+        print(f'MAE: {np.mean(error[:,0])}, RMSE: {np.mean(error[:,1])}, r2: {np.mean(error[:,2])}')
 
     whole_error = np.asarray(whole_error)
     print(f'MAE: {np.mean(whole_error[:,0])}, RMSE: {np.mean(whole_error[:,1])}, r2: {np.mean(whole_error[:,2])}')
