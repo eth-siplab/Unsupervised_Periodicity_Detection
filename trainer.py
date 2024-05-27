@@ -109,11 +109,7 @@ class Trainer:
                 if self.args.data_type == 'step': preds.append(freq*60*(32/60))
                 else: preds.append(freq*60)
                 if after_train: true.append(val_x[1].cpu().detach().numpy())
-
-        if self.args.wandb:
-            wandb.log({"eval_loss": avg_loss/total_samples})
-            wandb.log({'eval_shift': avg_freq/total_samples})
-            wandb.log({'avg_eval_mse': avg_val_mse/total_samples})      
+    
         if after_train:
             preds, true = torch.cat(preds).cpu().detach().numpy(), np.concatenate(true)
             plt.scatter(preds, true)
