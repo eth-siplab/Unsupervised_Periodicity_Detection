@@ -150,6 +150,10 @@ def setup_model_optm(args, DEVICE, classifier=True):
         model = SimPer(backbone=backbone, dim=args.p)
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.99), weight_decay=args.weight_decay)
         optimizers = [optimizer]
+    elif args.framework == 'ts2vec': # dummy models for ts2vec
+        model = SimCLR(backbone=backbone, dim=args.p)
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+        optimizers = [optimizer]
     else:
         NotImplementedError
 
@@ -369,26 +373,36 @@ def test(test_loader, best_model, DEVICE, criterion, args): # Test the pre-train
 
 
 def lock_backbone(model, args):
-    for name, param in model.named_parameters():
-        param.requires_grad = False
+    if args.framework not in ['ts2vec']:
+        for name, param in model.named_parameters():
+            param.requires_grad = False
+    else:
+        for name, param in model._net.named_parameters():
+            param.requires_grad = False
 
     if args.framework in ['simsiam', 'byol']:
         trained_backbone = model.online_encoder.net
     elif args.framework in ['simclr', 'simper', 'nnclr', 'tstcc','vicreg', 'barlowtwins']:
         trained_backbone = model.encoder
+    elif args.framework in ['ts2vec']:
+        trained_backbone = model
     else:
         NotImplementedError
 
     return trained_backbone
 
 
-def calculate_lincls_output(sample, target, trained_backbone, classifier, criterion, lowest = 30):
+def calculate_lincls_output(sample, target, trained_backbone, classifier, criterion, args):
+    lowest = args.lowest
     sample = sample.transpose(2,1) # sample --> (Batch_size, time steps, channel size)
     target = target.round().long() - lowest  
 
     target = torch.clamp(target, min=0)
     #if (target < 0).any() or (target > 180).any(): import pdb;pdb.set_trace();
-    _, feat = trained_backbone(sample)
+    if args.framework not in ['ts2vec']:
+        _, feat = trained_backbone(sample)
+    else:
+        feat = torch.from_numpy(trained_backbone.encode(sample.detach().cpu().numpy(), encoding_window='full_series')).to(args.cuda)
 
     if len(feat.shape) == 3:
         feat = feat.reshape(feat.shape[0], -1)
@@ -415,15 +429,15 @@ def train_lincls(train_loaders, val_loader, trained_backbone, classifier, DEVICE
         for idx, train_x in enumerate(train_loaders):
             sample, target = train_x[0], train_x[1]
 
-            loss, predicted, _ = calculate_lincls_output(sample, target, trained_backbone, classifier, criterion, args.lowest)
-
+            loss, predicted, _ = calculate_lincls_output(sample, target, trained_backbone, classifier, criterion, args)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
         # save model
         model_dir = model_dir_name + '/lincls_' + args.model_name + str(epoch) + '.pt'
-        torch.save({'trained_backbone': trained_backbone.state_dict(), 'classifier': classifier.state_dict()}, model_dir)
+        if args.framework not in ['ts2vec']:
+            torch.save({'trained_backbone': trained_backbone.state_dict(), 'classifier': classifier.state_dict()}, model_dir) 
 
         if args.scheduler:
             scheduler.step()
@@ -439,7 +453,7 @@ def train_lincls(train_loaders, val_loader, trained_backbone, classifier, DEVICE
                 correct = 0
                 for idx, (sample, target, domain) in enumerate(val_loader):
                     sample, target = sample.to(DEVICE).float(), target.to(DEVICE)
-                    loss, predicted, _ = calculate_lincls_output(sample, target, trained_backbone, classifier, criterion, args.lowest)
+                    loss, predicted, _ = calculate_lincls_output(sample, target, trained_backbone, classifier, criterion, args)
                     total_loss += loss.item()
                     total += target.size(0)
                     correct += (predicted == target).sum()
@@ -451,7 +465,7 @@ def train_lincls(train_loaders, val_loader, trained_backbone, classifier, DEVICE
 
 
 def test_lincls(test_loader, trained_backbone, best_lincls, DEVICE, criterion, args, plt=False):  # Test the fine-tuned model
-    classifier = setup_linclf(args, DEVICE, trained_backbone.out_dim)
+    classifier = setup_linclf(args, DEVICE, trained_backbone.out_dim) if args.framework not in ['ts2vec'] else setup_linclf(args, DEVICE, args.p)
     classifier.load_state_dict(best_lincls)
     total_loss = 0
     feats = None
@@ -462,7 +476,7 @@ def test_lincls(test_loader, trained_backbone, best_lincls, DEVICE, criterion, a
         classifier.eval()
         for idx, testx in enumerate(test_loader):
             sample, target = testx[0], testx[1]
-            loss, predicted, feat = calculate_lincls_output(sample, target, trained_backbone, classifier, criterion, args.lowest)
+            loss, predicted, feat = calculate_lincls_output(sample, target, trained_backbone, classifier, criterion, args)
             total_loss += loss.item()
             if feats is None:
                 feats = feat
