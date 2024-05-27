@@ -42,7 +42,7 @@ python main.py --cuda 0 --dataset 'ieee_small'
 The command to run the self-supervised learning methods:
 
 ```
-python main_SSL_LE.py --framework 'barlowtwins' --backbone 'DCL' --n_epoch 120 --batch_size 256 --lr 3e-3 --lr_cls 0.03 --cuda 0 --dataset 'dalia' --data_type 'ppg' --cases 'subject_large_ssl_fn' --aug1 'perm_jit' --aug2 'perm_jit'
+python main_SSL_LE.py --framework 'barlowtwins' --backbone 'DCL' --n_epoch 120 --batch_size 256 --lr 3e-3 --lr_cls 0.03 --cuda 0 --dataset 'dalia' --data_type 'ppg' --cases 'subject_large_ssl_fn' --aug1 'na' --aug2 'perm_jit'
 ```
 
 The command to run the supervised learning methods:
