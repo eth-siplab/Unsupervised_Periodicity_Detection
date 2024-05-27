@@ -45,8 +45,8 @@ fprintf('\n - Setting up parameters')
 
 % The following root folder contains subfolders for each subject (name
 % 'S#' where # is the subject number)
-up.paths.root_folder = 'C:/Users/bdemirel/Desktop/ETH Matlab/CAPNO/mat/';
-up.paths.save_folder = 'C:/Users/bdemirel/Desktop/ETH Matlab/CAPNO/mat/';
+up.paths.root_folder = '.../CAPNO/mat/';
+up.paths.save_folder = '.../CAPNO/mat/';
 
 end
 
