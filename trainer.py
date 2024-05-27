@@ -94,7 +94,6 @@ class Trainer:
                 else:
                     loss, freq = self.freq_losses_2(filtered_signal, val_x[2])
 
-
                 avg_loss += loss.detach().cpu().item() 
                 avg_freq += torch.sum((freq*60).detach().cpu())
                 if self.args.data_type == 'ecg' or self.args.data_type == 'ppg' or self.args.data_type == 'resp':
@@ -190,11 +189,7 @@ class Trainer:
 
             if epoch % 40 == 0 and self.args.plot: self.save_random(train_x[0], filtered_signal, epoch, freq.detach().cpu(), train_x[1])
             avg_val_mse=self.evaluate_model(valid_loader, device_id)
-            avg_loss, avg_freq, avg_mse = avg_loss/total_sample, avg_freq/total_sample, avg_mse/total_sample
-            if self.args.wandb:
-                wandb.log({"train_loss": avg_loss})
-                wandb.log({'train_shift': avg_freq})
-                wandb.log({'avg_train_mse': avg_mse})  
+            avg_loss, avg_freq, avg_mse = avg_loss/total_sample, avg_freq/total_sample, avg_mse/total_sample 
 
             if avg_loss + 0.001 < temp_avg_loss:
                 counter = 0
