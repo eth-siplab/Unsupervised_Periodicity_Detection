@@ -21,7 +21,6 @@ from trainer_SSL_LE import setup_dataloaders
 from scipy import signal
 from copy import deepcopy
 import fitlog
-from utils import tsne, mds, _logger
 from new_augmentations import vanilla_mixup_sup, cutmix_sup
 # fitlog.debug()
 
