@@ -2,10 +2,8 @@ clear all
 clc
 close all
 %%
-addpath('C:\Users\bdemirel\Desktop\ETH Matlab\IEEEPPG\data_bidmc\')
-addpath('C:\Users\bdemirel\Desktop\ETH Matlab\berken_functions\')
+addpath('...\data_bidmc\')
 %%
-folders = dir('C:\Users\bdemirel\Desktop\ETH Matlab\IEEEPPG\BAMI-1');
 fs = 50;
 window_duration = 8;
 overlap_duration = 6;
