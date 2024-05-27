@@ -197,7 +197,7 @@ def setup(args, DEVICE):
         args.weight_decay = 3e-4
     if args.framework == 'simper':
         args.criterion = 'Cont_InfoNCE'
-        args.backbone = 'UNET' # Cares about FFT
+        args.backbone = 'UNET' # Cares about FFT, try with diff archs 
         args.weight_decay = 1e-6
     if args.framework == 'vicreg':
         args.criterion = 'VICReg'
@@ -296,7 +296,6 @@ def calculate_model_loss(args, sample, target, model, criterion, DEVICE, recon=N
     if args.framework == 'simper':
         aug_sample1_model = aug_sample1.reshape(aug_sample1.shape[0] * aug_sample1.shape[1], aug_sample1.shape[2], 1)
         aug_sample2_model = aug_sample2.reshape(aug_sample2.shape[0] * aug_sample2.shape[1], aug_sample2.shape[2], 1)
-        # import pdb;pdb.set_trace();
         z1, z2 = model(x1=aug_sample1_model, x2=aug_sample2_model) # Feed all samples to model for efficiency
         z1 = z1.reshape(aug_sample1.shape[0], aug_sample1.shape[1], -1) # Reshape back to [bsz, M, Time steps]
         z2 = z2.reshape(aug_sample2.shape[0], aug_sample2.shape[1], -1)
@@ -314,7 +313,6 @@ def train(train_loaders, val_loader, model, DEVICE, optimizers, schedulers, crit
     best_model = None
     min_val_loss = 1e8
     for epoch in range(args.n_epoch):
-        #logger.debug(f'\nEpoch : {epoch}')
         total_loss = 0
         n_batches = 0
         model.train()
@@ -417,10 +415,6 @@ def calculate_lincls_output(sample, target, trained_backbone, classifier, criter
 def train_lincls(train_loaders, val_loader, trained_backbone, classifier, DEVICE, optimizer, criterion, args):
     best_lincls = None
     min_val_loss = 1e8
-    
-    # if args.plot_tsne:
-    #     import pdb;pdb.set_trace();
-    #     plot_vs_gt_usc(vae, train_loaders.dataset, 'train', z_inds=None)
 
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.n_epoch, eta_min=0)
 
