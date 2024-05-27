@@ -27,7 +27,6 @@ class data_loader_wesad(base_loader):
     def __getitem__(self, index):
         sample, target, lin_ratio = self.samples[index], self.bpms[index], self.lin_ratio[index]
         sample = np.square(np.diff(sample,append=1)) if self.args.data_type == 'ecg' else sample
-        #sample = np.apply_along_axis(lambda x: convolve(x, np.ones(np.int(fs/4)) / np.int(fs/4), mode='same'), axis=0, arr=sample)
         sample = (sample-np.min(sample))/(np.max(sample)-np.min(sample)) if self.args.data_type == 'ecg' else sample
         return torch.tensor(sample, device=self.args.cuda).float().unsqueeze(0), torch.tensor(target.item(),device=self.args.cuda).float(), lin_ratio
 
@@ -54,7 +53,6 @@ def prep_domains_wesad_subject_large(args):
 
     data_set = data_loader_wesad(x, y, np.ones((x.shape[0], 1)), args)
     target_loader = DataLoader(data_set, batch_size=1024, shuffle=False, collate_fn=None)
-    #print('target_loader batch: ', len(target_loader))
     return source_loader, None, target_loader
 
 def prep_domains_wesad_subject(args):
