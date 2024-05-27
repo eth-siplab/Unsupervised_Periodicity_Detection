@@ -89,18 +89,6 @@ function filtered = filter_butter_ecg(x,fs)
      ecg_h = filtfilt(b,a,x);
      filtered = ecg_h/ max( abs(ecg_h));
 end
-%% ==================== SNR Derivation ========================== %%
-function derived_snr = give_snr(segment,bpm,fs)
-[f,P1] = take_fft(segment,fs);
-bpms = 60*f;
-[minDistance, indexOfMin] = min(abs(bpms-30));
-[maxDistance, indexOfMax] = min(abs(bpms-210));
-P1_modified = P1(indexOfMin:indexOfMax);
-P1_modified=P1_modified/sum(P1_modified);
-[~, bpm_index] = min(abs(bpms-bpm));
-bpm_index = bpm_index - indexOfMin;
-derived_snr = sum(P1_modified(bpm_index-2:bpm_index+2));
-end
 %% Take fft
 function [f,P1] = take_fft(X,Fs)
 L = 2048;
