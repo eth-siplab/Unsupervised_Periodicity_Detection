@@ -7,13 +7,6 @@ from scipy import signal, stats
 import heartpy as hp
 from scipy.io import savemat
 
-def read_csv_HR(d):
-    list2 = []
-    with open(d+'/'+'HR.csv') as f:
-        for row in f:
-            list2.append(row.split()[0])
-    return np.array(list2[2:])
-
 sos = signal.butter(4, [0.5,4], btype='bandpass', fs=64, output='sos')
 ppg_list = []
 ecg_list = []
