@@ -6,8 +6,6 @@ import numpy as np
 import functools
 from models.models_nc import setup_model, count_parameters
 from trainer import Trainer, setup_data_loader, assign_fft_params
-from data_preprocess import data_preprocess_dalia
-import wandb
 
 parser = argparse.ArgumentParser(description='argument setting of network')
 parser.add_argument('--cuda', default=3, type=int, help='cuda device ID: 0,1,2,3')
