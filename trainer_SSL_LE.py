@@ -197,7 +197,7 @@ def setup(args, DEVICE):
         args.weight_decay = 3e-4
     if args.framework == 'simper':
         args.criterion = 'Cont_InfoNCE'
-        args.backbone = 'UNET' # Cares about FFT
+        args.backbone = 'UNET' # Cares about FFT, no improvements between archs 
         args.weight_decay = 1e-6
     if args.framework == 'vicreg':
         args.criterion = 'VICReg'
