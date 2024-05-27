@@ -67,7 +67,7 @@ def normalize_psd(psd):
 
 
 
-###################################
+################################### when the resample augmentation is used ###################################
 
 def resample_v2_loss(x_fft, org_fft, lin_ratio, loc_0, loc_1, freq, args):
     l1_loss, l2_loss = torch.ones((x_fft.size(0),1)).cuda(args.cuda), torch.ones((x_fft.size(0),1)).cuda(args.cuda)
