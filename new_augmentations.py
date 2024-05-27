@@ -86,7 +86,6 @@ def STAug(sample, args, DEVICE): # Comparison for Spectral and Time Augmentation
             sample[i,:,k] = s_prime
     return torch.from_numpy(sample).float()
 
-
 def vanilla_mix_up(sample):
     mixing_coeff = (0.9 - 1) * torch.rand(1) + 1  
     #m = torch.distributions.beta.Beta(torch.tensor([0.5]), torch.tensor([0.5]))
@@ -128,7 +127,6 @@ def best_mix_up_geo(sample, args, inds, out):
         mixed_samples[idx,:,:] = sample[idx,:,:]**mixing_coeff *  sample[ind,:,:]**(1 - mixing_coeff)
     return mixed_samples
 
-
 def mixing_coefficient_set(out):
     mixing_coefficient = torch.ones(out.shape).to(out.device)
     for idx, ind in enumerate(out):
@@ -153,7 +151,6 @@ def mixing_coefficient_set_for_each(similarities, inds, args):
     distances = torch.from_numpy(distances)
     return distances
 
-
 def spec_mix(samples):
     batch_size, alpha = samples.size(0), 1
     indices = torch.randperm(batch_size)
@@ -167,7 +164,6 @@ def spec_mix(samples):
         current_channel_stft[:, cut_start:cut_start+cut_len, :] = shuffled_data[:, cut_start:cut_start+cut_len, :]
         samples[:,:,i] = torch.istft(current_channel_stft, n_fft=samples.size(1),length=samples.size(1))
     return samples
-
 
 def cut_mix(data,alpha=2):
     batch_size = data.size(0)
@@ -226,7 +222,6 @@ def check_max_not_selected(max_indices, indices, abs_fft):
             indices = np.random.choice(np.ceil(abs_fft.size(1)/2).astype(int),abs_fft.size(2)) 
     return indices
 
-
 ######################################### For Supervised Learning Paradigm #########################################
 
 def vanilla_mixup_sup(sample, target, alpha=0.3):
@@ -238,7 +233,6 @@ def vanilla_mixup_sup(sample, target, alpha=0.3):
     # Mix the data
     mixed_data = mixing_coeff * sample + (1 - mixing_coeff) * sample[indices]
     return mixed_data, target, mixing_coeff, target[indices]
-
 
 def gen_new_aug_3_ablation_sup(sample, args, DEVICE, target, alpha=0.2): 
     fftsamples = torch.fft.rfft(sample, dim=1, norm='ortho')
@@ -281,7 +275,6 @@ def binary_mixup_sup(sample, target, alpha=0.2):
     x_mixup = sample * mask + x_shuffle * (1 - mask)
     return x_mixup, target, lam, target[indices]
 
-
 def gen_new_aug_2_sup(sample, args, inds, out, DEVICE, similarities, target):
     fftsamples = torch.fft.rfft(sample, dim=1, norm='ortho')
     inds = torch.randperm(sample.size(0))
@@ -296,7 +289,6 @@ def gen_new_aug_2_sup(sample, args, inds, out, DEVICE, similarities, target):
     z =  torch.polar(mixed_abs, mixed_phase)
     mixed_samples_time = torch.fft.irfft(z, dim=1, norm='ortho')
     return mixed_samples_time, target, coeffs, target[inds]
-
 
 def mag_mixup_sup(sample, args, DEVICE, target, alpha=0.2): 
     fftsamples = torch.fft.rfft(sample, dim=1, norm='ortho')
