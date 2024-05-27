@@ -11,11 +11,10 @@ from data_preprocess.base_loader import base_loader
 
 
 def load_domain_data(domain_idx):
-    mat = scipy.io.loadmat('data_preprocess/data/ptb_v3.mat')
+    mat = scipy.io.loadmat('data_preprocess/data/ptb.mat')
     data = mat['data_to_save']
     data = data[0,int(domain_idx)] 
     raw_data = np.concatenate(data[:,0], axis=0) 
-    #raw_data = data[:,0]
     bpms = data[:,1]
     return raw_data, bpms
 
@@ -26,10 +25,7 @@ class data_loader_ptb(base_loader):
     def __getitem__(self, index):
         sample, target, lin_ratio = self.samples[index], self.bpms[index], self.lin_ratio[index]
         sample = np.square(np.diff(sample,append=np.zeros((1,))))
-        #sample = np.apply_along_axis(lambda x: convolve(x, np.ones(20) / 20, mode='same'), axis=0, arr=sample)
-        #sample = (sample-np.min(sample))/(np.max(sample)-np.min(sample))
         sample = (sample-np.mean(sample))
-        #sample = np.pad(sample, (100, 100), 'constant', constant_values=(0, 0))
         return torch.tensor(sample, device=self.args.cuda).float().unsqueeze(0), torch.tensor(target.item(),device=self.args.cuda).float(), lin_ratio
     
 def collate_fn(batch):
