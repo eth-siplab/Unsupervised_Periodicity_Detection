@@ -24,7 +24,6 @@ Contents
 * [Datasets](#datasets)
 * [Running](#running)
 * [TLDR](#tldr)
-* [Citation](#citation)
 
 Datasets
 ----------
@@ -56,17 +55,4 @@ TLDR
 ----------
 We present a novel method (two regularizers) for detecting periodic patterns in time series data without using labels or specific augmentations. 
 Our approach avoids common issues like representation collapse and outperforms existing methods across three different tasks.
-
-
-Citation
-----------
-If you find our paper or codes useful, please cite our work:
-
-    @inproceedings{
-    demirel2023finding,
-    title={Finding Order in Chaos: A Novel Data Augmentation Method for Time Series in Contrastive Learning},
-    author={Berken Utku Demirel and Christian Holz},
-    booktitle={Thirty-seventh Conference on Neural Information Processing Systems},
-    year={2023},
-    url={https://openreview.net/forum?id=dbVRDk2wt7}
-    }
+The proposed regularizers can be found in [scripts](https://github.com/eth-siplab/Unsupervised_Periodicity_Detection/blob/main/trainer.py) under function name freq_losses. 
