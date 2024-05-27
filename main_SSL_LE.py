@@ -31,10 +31,9 @@ parser.add_argument('--overlap', default=2, type=float, help='overlap in seconds
 parser.add_argument('--downsample_ratio', default=5, type=float, help='Downsampling the original signal')
 parser.add_argument('--data_type', default='ecg', choices=['ecg', 'imu_chest', 'imu_wrist', 'ppg'], type=str, help='data type')
 parser.add_argument('--input_dim', default = 800, type=int, help='Input size of the original signal')
-parser.add_argument('--lowest', default = 30, type=int, help='Lowest frequency of the original signal')
+parser.add_argument('--lowest', default = 30, type=int, help='Lowest value of the label for the task, i.e., 30bpm')
 parser.add_argument('--cases', type=str, default='subject_large_ssl_fn', choices=['subject', 'subject_large_ssl_fn'], help='name of scenarios, cross user')
 parser.add_argument('--batch_size', default=512, type=int, help='batch size')
-parser.add_argument('--wandb', action='store_true', help='Saving')
 parser.add_argument('--test', action='store_true', help='test data')
 
 # Frameworks
@@ -80,7 +79,7 @@ parser.add_argument('--plt', type=bool, default=False, help='if or not to plot r
 parser.add_argument('--plot_tsne', action='store_true', help='if or not to plot t-SNE')
 
 ############ Example run ############
-# python main_SSL_LE.py --framework 'tstcc' --backbone 'FCN' --n_epoch 120 --batch_size 256 --lr 3e-3 --lr_cls 0.03 --cuda 3 --dataset 'ieee_small' --cases 'subject_large_ssl_fn' --aug1 'jit_scal' --aug2 'perm_jit' 
+# python main_SSL_LE.py --framework 'simclr' --backbone 'FCN' --n_epoch 120 --batch_size 256 --lr 3e-3 --lr_cls 0.03 --cuda 3 --dataset 'ieee_small' --cases 'subject_large_ssl_fn' --aug1 'jit_scal' --aug2 'perm_jit' 
 
 # Domains for each dataset
 def set_domain(args):
