@@ -55,4 +55,4 @@ TLDR
 ----------
 We present a novel method (two regularizers) for detecting periodic patterns in time series data without using labels or specific augmentations. 
 Our approach avoids common issues like representation collapse and outperforms existing methods across three different tasks.
-The proposed regularizers can be found in [scripts](https://github.com/eth-siplab/Unsupervised_Periodicity_Detection/blob/main/trainer.py) under function name freq_losses. 
+The proposed regularizers can be found in [the training script](https://github.com/eth-siplab/Unsupervised_Periodicity_Detection/blob/main/trainer.py) under function name freq_losses. 
