@@ -29,9 +29,6 @@ def find_closest_value(array, sample, fs, L=512):
     bpms = f * 60
     closest_indices = np.abs(bpms - filtered_values[:, np.newaxis]).argmin(axis=1)
     max_index = np.argmax(P1[closest_indices])
-    # Find the value closest to 120
-    # closest_value = min(filtered_values, key=lambda x: abs(x - 120))
-
     return filtered_values[max_index]
 
 def find_closest_value_resp(array, sample, fs, L=512):
@@ -152,7 +149,6 @@ if __name__ == '__main__':
 
     error_wesad = evaluate_wesad()
     metrics_wesad = error_to_np(error_wesad)
-    # error = evaluate_capno()
     #############################################
     print(f'PTB MAE for wavelet based: {metrics_ptb[0]}')
     print(f'PTB RMSE for wavelet based: {metrics_ptb[1]}')
