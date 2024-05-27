@@ -16,7 +16,7 @@ parser.add_argument('--fs', default=100, type=float, help='sampling rate of the 
 parser.add_argument('--weight_decay', default=0.0, type=float, help='weight decay')
 parser.add_argument('--lr', default=1e-3, type=float, help='learning rate')
 parser.add_argument('--scheduler', type=bool, default=True, help='if or not to use a scheduler')
-parser.add_argument('--augs', action='store_true', help='Saving')  # Augmentation at the beginning (before pretraining)
+parser.add_argument('--augs', action='store_true', help='Saving')  # Augmentations at the beginning (before pretraining)
 
 # Augmentations
 parser.add_argument('--aug1', type=str, default='jit_scal',
@@ -32,10 +32,9 @@ parser.add_argument('--overlap', default=2, type=float, help='overlap in seconds
 parser.add_argument('--downsample_ratio', default=5, type=float, help='Downsampling the original signal')
 parser.add_argument('--data_type', default='ecg', choices=['ecg', 'imu_chest', 'imu_wrist', 'ppg'], type=str, help='data type')
 parser.add_argument('--input_dim', default = 800, type=int, help='Input size of the original signal')
-parser.add_argument('--lowest', default = 30, type=int, help='Lowest frequency of the original signal')
+parser.add_argument('--lowest', default = 30, type=int, help='Lowest value of the task, i.e., 30bpm for HR')
 parser.add_argument('--cases', type=str, default='subject_large_ssl_fn', choices=['subject', 'subject_large_ssl_fn'], help='name of scenarios, cross user')
 parser.add_argument('--batch_size', default=512, type=int, help='batch size')
-parser.add_argument('--wandb', action='store_true', help='Saving')
 parser.add_argument('--test', action='store_true', help='test data')
 
 # Frameworks
@@ -75,13 +74,13 @@ parser.add_argument('--cov_coeff', type=float, default=1, help='weight for covar
 # Barlow Twins
 parser.add_argument('--lambd', type=float, default=0.0051, help='weight for the off-diagonal terms in the covariance matrix')
 
-
 # plot
 parser.add_argument('--plt', type=bool, default=False, help='if or not to plot results')
 parser.add_argument('--plot_tsne', action='store_true', help='if or not to plot t-SNE')
 
 ############ Example run ############
-# python main_SSL_LE.py --framework 'tstcc' --backbone 'FCN' --n_epoch 120 --batch_size 256 --lr 3e-3 --lr_cls 0.03 --cuda 3 --dataset 'ieee_small' --cases 'subject_large_ssl_fn' --aug1 'jit_scal' --aug2 'perm_jit' 
+
+# python main_SSL_LE.py --framework 'simclr' --backbone 'FCN' --n_epoch 120 --batch_size 256 --lr 3e-3 --lr_cls 0.03 --cuda 3 --dataset 'ieee_small' --cases 'subject_large_ssl_fn' --aug1 'jit_scal' --aug2 'perm_jit' 
 
 # Domains for each dataset
 def set_domain(args):
@@ -161,6 +160,7 @@ def main_SSL_LE(args):
         best_pretrain_model = train_ts2vec(train_loaders, val_loader, DEVICE, args)
 
     ####################################################################################################################
+  
     trained_backbone = lock_backbone(best_pretrain_model, args)  # Linear evaluation
 
     setattr(args, 'cases', 'subject') # Fine tune the models in the limited labelled data with the same target subject/domain
