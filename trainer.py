@@ -79,24 +79,6 @@ class Trainer:
             plt.cla()
         return 0
 
-    def orthogonal_loss(self, vectors_batch):
-        # Calculate dot products between all possible pairs of the three vectors
-        first_vector = vectors_batch[:, 0, :].unsqueeze(1)
-        second_vector = vectors_batch[:, 1, :].unsqueeze(1)
-        third_vector = vectors_batch[:, 2, :].unsqueeze(1)
-
-        dot_product_AB = torch.bmm(first_vector,torch.transpose(second_vector,2,1)).squeeze()
-        dot_product_AC = torch.bmm(first_vector,torch.transpose(third_vector,2,1)).squeeze()
-        dot_product_BC = torch.bmm(second_vector,torch.transpose(third_vector,2,1)).squeeze()
-        
-        # Calculate the squared sum of dot products
-        squared_sum = dot_product_AB**2 + dot_product_AC**2 + dot_product_BC**2
-        
-        # The target value for orthogonality is 0, so subtract it
-        loss = torch.mean(squared_sum)
-    
-        return loss
-
     def evaluate_model(self, valid_loader, DEVICE, after_train=False):
         if after_train: 
             self.model.load_state_dict(torch.load('saved_models' + str(self.args.cuda) + '/' + str(self.args.model) + str(self.args.dataset) + str(self.args.data_type) + str(self.args.seed) +'.pt'))
@@ -105,10 +87,6 @@ class Trainer:
         with torch.no_grad():
             for i, val_x in enumerate(valid_loader):
                 filtered_signal, _ = self.model(val_x[0])
-
-                # normalize = torchvision.transforms.Normalize(torch.mean(filtered_signal,axis=1), torch.std(filtered_signal,axis=1))
-                # filtered_signal = normalize(filtered_signal.unsqueeze(1))
-                # loss, freq = self.freq_losses(filtered_signal, val_x[0], val_x[2])
 
                 if not self.args.past_work1:
                     filtered_signal = filtered_signal.unsqueeze(1)
@@ -174,11 +152,8 @@ class Trainer:
         if self.args.aug_type == 'freq_shift':
             return shiftfreq_loss(x_fft, org_fft, lin_ratio, loc_0, loc_1, freq, self.args)
         else:
-            #x_fft /= torch.sum(x_fft, axis=2, keepdim=True)
             l1 = torch.sum((torch.sum(x_fft[:,:,0:loc_0], dim=2).squeeze() + torch.sum(x_fft[:,:,loc_1:], dim=2).squeeze()), dim=0)
             # Entropy
-            # x_fft = torch.square(x_fft)
-            # org_fft = torch.square(org_fft)
             freq_interest = x_fft[:,:,loc_0:loc_1]/torch.sum(x_fft[:,:,loc_0:loc_1], axis=2, keepdim=True)
             freq_interest_org = org_fft[:,:,loc_0:loc_1]/torch.sum(org_fft[:,:,loc_0:loc_1], axis=2, keepdim=True)
 
@@ -194,7 +169,6 @@ class Trainer:
     def train(self, train_loader, valid_loader, split_seed, device_id):
         n_epoch, counter = 999, 0
         temp_avg_loss = np.inf
-        if self.args.wandb: wandb.watch(self.model, log='all')
         for epoch in range(n_epoch):
             self.model.train()
             avg_loss, avg_freq, avg_mse, total_sample = 0, 0, 0, 0
@@ -202,8 +176,6 @@ class Trainer:
                 filtered_signal, _ = self.model(train_x[0])
                 
                 if not self.args.past_work1:
-                    #normalize = torchvision.transforms.Normalize(torch.mean(filtered_signal,axis=1), torch.std(filtered_signal,axis=1))
-                    #filtered_signal = normalize(filtered_signal.unsqueeze(1))
                     filtered_signal = filtered_signal.unsqueeze(1)
                     loss, freq = self.freq_losses(filtered_signal, train_x[0], train_x[2])
                 else:
@@ -217,12 +189,9 @@ class Trainer:
                 avg_freq += torch.sum((freq*60).detach().cpu())
                 if self.args.data_type == 'ecg' or self.args.data_type == 'ppg':
                     avg_mse += (torch.nn.L1Loss(reduction='sum')((freq*60).squeeze(), train_x[1]).item())
-                # else:
-                #     eval_points = train_x[3] == 1
-                #     if eval_points.any(): avg_mse += (torch.nn.L1Loss(reduction='sum')(freq[eval_points]*60, torch.from_numpy(train_x[1][eval_points]).to(device_id))).item()
 
                 total_sample += train_x[0].size(0)
-                #avg_coeffs = [x + y for x, y in zip(avg_coeffs, y_coeffs)]
+
             if epoch % 40 == 0 and self.args.plot: self.save_random(train_x[0], filtered_signal, epoch, freq.detach().cpu(), train_x[1])
             avg_val_mse=self.evaluate_model(valid_loader, device_id)
             avg_loss, avg_freq, avg_mse = avg_loss/total_sample, avg_freq/total_sample, avg_mse/total_sample
@@ -239,11 +208,9 @@ class Trainer:
             else:
                 counter += 1
                 if counter > 30:
-                    #if self.args.wandb: wandb.finish()
                     return avg_loss
 
             self.scheduler.step(avg_loss)
-        #if self.args.wandb: wandb.finish()
         return avg_loss
     
 
