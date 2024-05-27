@@ -12,7 +12,7 @@ from data_preprocess.augmentations import gen_aug
 
 def load_domain_data(domain_idx):
     str_folder = 'data_preprocess/data/'
-    data_all = scipy.io.loadmat(str_folder + 'BIDMC_2.mat')
+    data_all = scipy.io.loadmat(str_folder + 'BIDMC.mat')
     data_all = data_all['whole_data']
     domain_idx = int(domain_idx)
     X = data_all[domain_idx,0].transpose()
