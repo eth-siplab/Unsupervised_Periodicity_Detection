@@ -2,8 +2,8 @@ clear all
 close all
 clc
 %%
-addpath('C:\Users\bdemirel\Desktop\ETH Matlab\CAPNO\mat');
-data = load('C:\Users\bdemirel\Desktop\ETH Matlab\CAPNO\mat\capnobase_data.mat').data;
+addpath('...\CAPNO\mat');
+data = load('...\CAPNO\mat\capnobase_data.mat').data;
 window_length = 64;
 whole_data = {};
 for i=1:length(data)
@@ -103,7 +103,7 @@ end
 function predicted_bpm = predict_fft(x,fs)
 [f,P1] = take_fft(x,fs);
 bpms = 60*f;
-[minDistance, indexOfMin] = min(abs(bpms-4));
+[minDistance, indexOfMin] = min(abs(bpms-4)); % different limits for resp
 [maxDistance, indexOfMax] = min(abs(bpms-40));
 [M,I] = max(P1(indexOfMin:indexOfMax));
 predicted_loc = I + indexOfMin - 1;
