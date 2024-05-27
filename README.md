@@ -22,7 +22,7 @@ Contents
 ----------
 
 * [Datasets](#datasets)
-* [Running](#running)
+* [Commands](#commands)
 * [TLDR](#tldr)
 
 Datasets
@@ -33,7 +33,7 @@ Datasets
 - `Step counting`  [Clemson](https://sites.google.com/view/rmattfeld/pedometer-dataset).
 2. After downloading the raw data, they should be processed with the corresponding [scripts](https://github.com/eth-siplab/Unsupervised_Periodicity_Detection/tree/main/Heuristic_and_data_prep), if there is any.
 
-Running
+Commands
 ----------
 The command to run the proposed approach:
 ```
