@@ -2,8 +2,7 @@ clear all
 clc
 close all
 %%
-addpath('C:\Users\bdemirel\Desktop\ETH Matlab\IEEEPPG\Training_data\')
-addpath('C:\Users\bdemirel\Desktop\ETH Matlab\berken_functions\')
+addpath('\...\Training_data\')
 %%
 folders = dir('Training_data\');
 fs = 125;
@@ -11,7 +10,7 @@ window_duration = 8;
 overlap_duration = 6;
 data = {};
 counter = 1;
-for i = 3:2:25
+for i = 3:2:25 % change according to the training data folder
 current_data = load(folders(i).name).sig;
 bpm_trace = load(folders(i+1).name).BPM0;
 ecg = current_data(1,:);
@@ -24,48 +23,18 @@ acc3 = current_data(6,:);
 ppg1_filtered = filter_butter(ppg1,fs);
 ppg2_filtered = filter_butter(ppg2,fs);
 ppg_avg = (ppg1_filtered + ppg2_filtered)/2;
-% acc1_filtered = filter_butter(acc1,fs);
-% acc2_filtered = filter_butter(acc2,fs);
-% acc3_filtered = filter_butter(acc3,fs);
-% acc_total = sqrt(acc1_filtered.^2 + acc2_filtered.^2 + acc3_filtered.^2);
-
-% ppg1_segments = downsample(normalize(buffer(ppg1_filtered,window_duration*fs,overlap_duration*fs),'zscore'),5).';
-% ppg2_segments = downsample(normalize(buffer(ppg2_filtered,window_duration*fs,overlap_duration*fs),'zscore'),5).';
 
 ppg_avg_segments = downsample(normalize(buffer(ppg_avg,window_duration*fs,overlap_duration*fs),'zscore'),5).';
-% ppg_avg_segments = ((buffer(ppg_avg,window_duration*fs,overlap_duration*fs))).';
 %%
 data_ppg_avg{counter,1} = ppg_avg_segments(4:end-1,:);
 % data_bpm_values{counter,1} = found_bpm(4:end-1,:);
 if length(data_ppg_avg{counter,1}(:,1)) ~= length(bpm_trace)
 data_ppg_avg{counter,1} = ppg_avg_segments(4:end,:);
-% data_acc_avg{counter,1} = accTotal_segments(4:end,:);
 end
 data_bpm_values{counter,1} = bpm_trace;  
-
-% data{counter,2} = ppg1_segments(4:end-1,:);
-% data{counter,3} = ppg2_segments(4:end-1,:);
-% data{counter,4} = ppg_avg_segments(4:end-1,:);
-% data{counter,5} = acc1_segments(4:end-1,:);
-% data{counter,6} = acc2_segments(4:end-1,:);
-% data{counter,7} = acc3_segments(4:end-1,:);
-% data{counter,8} = accTotal_segments(4:end-1,:);
-% data{counter,9} = found_bpm(4:end-1,:);
-
-% Get SNR ratio
-% derived_snr = zeros((length(data_ppg_avg{counter,1}(:,1))),1);
-% for m = 1:length(data_ppg_avg{counter,1}(:,1))
-%     current_segment = data_ppg_avg{counter,1}(m,:);
-%     current_bpm = data_bpm_values{counter,1}(m);
-%     derived_snr(m) = give_snr(current_segment,current_bpm);
-% end
-% data_snr{counter,1} = derived_snr; 
  
 counter = counter + 1;
 end
-%% Save
-% save('IEEESmall.mat','data_ppg_avg','data_bpm_values')
-% save('IEEESmall_downsampled.mat','data_ppg_avg','data_bpm_values')
 %% Evaluate
 whole_error_fft_mae = [];
 whole_error_fft_rmse = [];
