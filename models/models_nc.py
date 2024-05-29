@@ -74,7 +74,6 @@ class UNET_1D_simp(nn.Module):
         self.output_dim = output_dim
         self.args = args
 
-        self.AvgPool1D0 = nn.AvgPool1d(kernel_size=int(self.args.fs/4), stride=None) if not args.data_type == 'ppg' else nn.AvgPool1d(kernel_size=int(args.fs/5), stride=1)
         self.AvgPool1D1 = nn.AvgPool1d(kernel_size=2, stride=2)
         self.AvgPool1D2 = nn.AvgPool1d(kernel_size=4, stride=4)
         self.AvgPool1D3 = nn.AvgPool1d(input_dim, stride=2)
