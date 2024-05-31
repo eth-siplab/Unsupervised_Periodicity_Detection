@@ -1,4 +1,4 @@
-name: water
+name: periodicity
 channels:
   - pytorch
   - nvidia
@@ -194,4 +194,4 @@ dependencies:
       - typing-inspect==0.9.0
       - werkzeug==3.0.0
       - zipp==3.16.2
-prefix: /local/home/bdemirel/anaconda3/envs/water
+prefix: /local/home/anaconda3/envs/periodicity
