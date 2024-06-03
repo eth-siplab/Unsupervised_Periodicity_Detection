@@ -1,5 +1,5 @@
 import scipy.io
-mat = scipy.io.loadmat('ptb_v1.mat')
+mat = scipy.io.loadmat('ptb.mat')
 data = mat['data_to_save']
 train_data = data[0,0]
 test_data = data[0,1]

@@ -1,10 +1,11 @@
-# Periodic Source Detection in Time Series
-
-
-
 ## An Unsupervised Approach for Periodic Source Detection in Time Series (ICML 2024, Official Code)
 
-Berken Utku Demirel, Christian Holz<br/>
+Berken Utku Demirel and [Christian Holz](https://www.christianholz.net)<br/>
+
+[Sensing, Interaction & Perception Lab](https://siplab.org)<br/>
+Department of Computer Science<br/>
+ETH Zürich, Switzerland <br/>
+
 
 <p align="center">
 </p>
