@@ -1,7 +1,6 @@
 clear all 
 clc
 close all
-addpath('C:\Users\bdemirel\Desktop\ETH Matlab\berken_functions')
 %% Load data
 data = load('matlab_ptb.mat'); 
 xtrain = data.x_train;
