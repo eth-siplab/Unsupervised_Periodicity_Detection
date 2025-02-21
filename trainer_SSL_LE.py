@@ -9,7 +9,6 @@ from models.frameworks import *
 from models.loss import *
 from models.backbones import *
 from models.models_nc import ResNet1D
-from plot_latent_vs_true import * 
 from sklearn.metrics import roc_auc_score
 from data_preprocess import data_preprocess_IEEE_small
 from data_preprocess import data_preprocess_IEEE_big
